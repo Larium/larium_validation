@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
@@ -7,7 +7,7 @@ namespace Larium\Validations\Validators;
 class Numericality extends \Larium\Validations\Validators\Each
 {
     protected $checks = array(
-        'greater_than' => '>', 
+        'greater_than' => '>',
         'greater_than_or_equal_to' => '>=',
         'equal_to' => '==',
         'less_than' => '==',
@@ -18,7 +18,7 @@ class Numericality extends \Larium\Validations\Validators\Each
     );
 
     private $_reserved_options = array(
-        'greater_than' => '>', 
+        'greater_than' => '>',
         'greater_than_or_equal_to' => '>=',
         'equal_to' => '==',
         'less_than' => '<',
@@ -37,8 +37,8 @@ class Numericality extends \Larium\Validations\Validators\Each
         }
 
         if (array_key_exists('only_integer',$this->options)) {
-            if ($this->options['only_integer']) { 
-                if (!($value = $this->parse_value_as_integer($value))) {
+            if ($this->options['only_integer']) {
+                if (is_null($value = $this->parse_value_as_integer($value))) {
                     $record->errors()->add($attribute, ':not_an_integer', $this->filtered_options($value));
                     return;
                 }
@@ -56,7 +56,7 @@ class Numericality extends \Larium\Validations\Validators\Each
                         $record->errors()->add($attribute, ":$option", $this->filtered_options($value));
                     break;
                 default:
-                    
+
                     if ( is_callable($option_value)) $option_value = $option_value($record);
 
                     if ( false === $this->_check_value($value, $option_value, $this->checks[$option])) {
@@ -69,7 +69,7 @@ class Numericality extends \Larium\Validations\Validators\Each
         }
 
     }
-    
+
     protected function check_validity()
     {
         $options = array_intersect_key($this->options, $this->checks);
