@@ -34,13 +34,6 @@ class Numericality extends AbstractValidator
      */
     public function validateEach($record, $attribute, $value)
     {
-        if (array_key_exists('allow_null', $this->options)) {
-            if ($this->options['allow_null'] && null === $value) {
-
-                return;
-            }
-        }
-
         if (false === is_numeric($value)) {
 
             $record->errors()->add(

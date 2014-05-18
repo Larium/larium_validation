@@ -60,19 +60,46 @@ class NumericalityTest extends \PHPUnit_Framework_TestCase
         Topic::clearValidators();
     }
 
-    public function testSuccessLessThanOrEqual()
+    public function testDefaultNumericality()
     {
-
         Topic::validatesNumericalityOf('approved');
 
         $this->invalid(self::$NIL + self::$BLANK + self::$JUNK);
+        $this->valid(self::$FLOATS + self::$INTEGERS + self::$BIGDECIMAL_STRINGS);
     }
 
+    public function testDefaultNumericalityWithNullAllowed()
+    {
+        Topic::validatesNumericalityOf('approved', ['allow_null' => true]);
+
+        $this->invalid(self::$BLANK + self::$JUNK);
+        $this->valid(self::$NIL + self::$FLOATS + self::$INTEGERS + self::$BIGDECIMAL_STRINGS);
+    }
+
+    public function testDefaultNumericalityWithIntegerOnly()
+    {
+        Topic::validatesNumericalityOf('approved', ['only_integer' => true]);
+
+        $this->invalid(self::$NIL + self::$BLANK + self::$JUNK + self::$FLOATS + self::$BIGDECIMAL_STRINGS);
+        $this->valid(self::$INTEGERS);
+    }
+
+
+    private function valid(array $values)
+    {
+        foreach ($this->with_each_topic_approved_value($values) as $topic => $value) {
+            $this->assertTrue($topic->isValid(), var_export($value, true).' not accepted as a number');
+        }
+    }
 
     private function invalid(array $values, $error = null)
     {
         foreach ($this->with_each_topic_approved_value($values) as $topic => $value) {
             $this->assertTrue($topic->isInvalid(), var_export($value, true).' not rejected as a number');
+            $this->assertNotEmpty($topic->getErrors()['approved'], 'FAILED for '.var_export($value, true));
+            if ($error) {
+                $this->assertEquals($error, reset($topic->getErrors()['approved']));
+            }
         }
     }
 
