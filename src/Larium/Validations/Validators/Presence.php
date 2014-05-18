@@ -4,7 +4,7 @@
 
 namespace Larium\Validations\Validators;
 
-class Presence extends Each
+class Presence extends AbstractValidator
 {
     protected function validateEach($record, $attribute, $value)
     {

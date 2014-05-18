@@ -19,7 +19,7 @@ namespace Larium\Validations\Validators;
  * @author  Andreas Kollaros <php@andreaskollaros.com> 
  * @license MIT {@link http://opensource.org/licenses/mit-license.php}
  */
-class Email extends Each
+class Email extends AbstractValidator
 {
     protected $message = 'is not a valid email';
     

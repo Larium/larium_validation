@@ -3,9 +3,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 namespace Larium\Validations\Validators;
-use Larium\Validations\Validators\Each;
+use Larium\Validations\Validators\AbstractValidator;
 
-class Format extends Each
+class Format extends AbstractValidator
 {
     public function validateEach($record, $attribute, $value)
     {

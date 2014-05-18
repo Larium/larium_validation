@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
@@ -12,7 +12,7 @@ namespace Larium\Validations\Validators;
  *
  *
  */
-class Length extends \Larium\Validations\Validators\Each
+class Length extends AbstractValidator
 {
     protected $messages = array('is'=>':wrong_length', 'min' => ':too_short', 'max'=>':too_long');
     protected $checks = array('is'=>'==', 'min'=>'>=', 'max' => '<=');
@@ -21,8 +21,8 @@ class Length extends \Larium\Validations\Validators\Each
     public function __construct($options)
     {
 
-        $range = isset($options['in']) 
-            ? $options['in'] 
+        $range = isset($options['in'])
+            ? $options['in']
             : (isset($options['within']) ? $options['within'] : null);
         if ($range) {
             if (!is_array($range))
@@ -30,7 +30,7 @@ class Length extends \Larium\Validations\Validators\Each
             $options['min'] = min($range);
             $options['max'] = max($range);
         }
-        
+
         parent::__construct($options);
     }
 
@@ -38,11 +38,11 @@ class Length extends \Larium\Validations\Validators\Each
     {
         $value = $this->_tokenize($value);
         $value_length = is_array($value) ? count($value) : strlen($value);
-        
+
         foreach ($this->checks as $key => $operator) {
 
             if (!isset($this->options[$key])) continue;
-            
+
             $check_value = $this->options[$key];
             if ($this->_check_value($check_value, $value_length, $operator)) continue;
 

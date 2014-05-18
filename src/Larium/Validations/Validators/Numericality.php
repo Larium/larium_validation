@@ -4,7 +4,7 @@
 
 namespace Larium\Validations\Validators;
 
-class Numericality extends \Larium\Validations\Validators\Each
+class Numericality extends AbstractValidator
 {
     protected $checks = array(
         'greater_than' => '>',

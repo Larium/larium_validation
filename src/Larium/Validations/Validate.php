@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
@@ -8,7 +8,7 @@ namespace Larium\Validations;
  *
  * To allow validation to a class extend the class with this Validate class.
  * Implement the abstract method {@link validations()} by adding the validations
- * you want to pass the class. 
+ * you want to pass the class.
  *
  * <code>
  * class MyClass
@@ -34,8 +34,8 @@ trait Validate
      *
      * @see \Larium"validations\Errors
      *
-     * @return \ArrayIterator 
-     */ 
+     * @return \ArrayIterator
+     */
     public function errors()
     {
         $this->_errors = $this->_errors ?: new Errors();
@@ -56,7 +56,8 @@ trait Validate
     {
         $this->errors()->clear();
         $this->run_validations();
-        return $this->errors()->isEmpty(); 
+
+        return $this->errors()->isEmpty();
     }
 
     /**
@@ -66,29 +67,29 @@ trait Validate
      */
     public function isInvalid()
     {
-        return !$this->isValid(); 
+        return !$this->isValid();
     }
 
     /**
      * Validates properties of a class against validators.
      *
-     * validations array must contain the name of Validator class without the 
+     * validations array must contain the name of Validator class without the
      * namespace and the options for this validator.
-     * 
+     *
      * <code>
      *  $validations = array('Validator' => array('message'=>'my error message'));
-     *  
-     *  $validations = array('Validator' => true); // you must pass true if 
+     *
+     *  $validations = array('Validator' => true); // you must pass true if
      *                                                options are not exist.
      * </code>
      *
-     * On examples above the Larium\Validations\Validators\Validator will be 
+     * On examples above the Larium\Validations\Validators\Validator will be
      * called.
      *
-     * @params string|array $attrs       the properties of class to validate
-     * @params array        $validations an array of Validator name class and 
-     *                                   its options.
-     * 
+     * @param string|array $attrs       Properties of class to validate.
+     * @param array        $validations An array of Validator name class and
+     *                                  its options.
+     *
      * @throws \Exception if a Validator class does not exist.
      *
      * @return void
@@ -98,12 +99,12 @@ trait Validate
         foreach ($validations as $key=>$options) {
 
             $validator = "\\Larium\\Validations\\Validators\\" . $key;
-            
-            if (!class_exists($validator)) {
+
+            if (!class_exists($validator) || !class_exists($key)) {
                 throw new \Exception("Unknown validator: {$key}");
             }
 
-            $defaults = $this->_parse_validates_options($options);
+            $defaults = $this->parse_validates_options($options);
             $defaults['attributes'] = $attrs;
             $vtor = new $validator($defaults);
             $vtor->validate($this);
@@ -127,7 +128,7 @@ trait Validate
         return $this->errors()->count() == 0;
     }
 
-    private function _parse_validates_options($options)
+    private function parse_validates_options($options)
     {
         if (is_array($options)) {
 
@@ -140,4 +141,4 @@ trait Validate
             return array('with' => $options);
         }
     }
-} 
+}

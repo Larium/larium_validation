@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 namespace Larium\Validations\Validators;
 
-class Inclusion extends \Larium\Validations\Validators\Clusivity
+class Inclusion extends Clusivity
 {
     public function validateEach($record, $attribute, $value)
     {
