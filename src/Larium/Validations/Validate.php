@@ -120,11 +120,7 @@ trait Validate
                 $options = array_shift($arguments);
             }
 
-            $validator_options = array(
-                $class => empty($options) ? true : $options
-            );
-
-            self::validates_with($class, $attrs, $validator_options);
+            self::validates_with($class, $attrs, $options);
         }
     }
 
