@@ -25,6 +25,8 @@ namespace Larium\Validations;
  */
 trait Validate
 {
+    private $_validated = false;
+
     protected static $validators = array();
     protected $default_keys = array('if', 'on', 'allow_empty', 'allow_null');
 
@@ -162,7 +164,10 @@ trait Validate
 
     protected function run_validations()
     {
-        $this->validations();
+        if (false === $this->_validated) {
+            $this->validations();
+            $this->_validated = true;
+        }
 
         foreach (self::$validators as $validator) {
             $validator->validate($this);
