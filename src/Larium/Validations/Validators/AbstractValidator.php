@@ -92,6 +92,7 @@ abstract class AbstractValidator
                 return $record->$if();
             }
         }
+
         return true;
     }
 

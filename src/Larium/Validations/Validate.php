@@ -25,6 +25,7 @@ namespace Larium\Validations;
  */
 trait Validate
 {
+    protected static $validators = array();
     protected $default_keys = array('if', 'on', 'allow_empty', 'allow_null');
 
     private $_errors;
@@ -96,19 +97,57 @@ trait Validate
      */
     final public function validates($attrs, array $validations)
     {
-        foreach ($validations as $key=>$options) {
+        foreach ($validations as $validatorClass => $options) {
 
-            $validator = "\\Larium\\Validations\\Validators\\" . $key;
+            self::validates_with($validatorClass, $attrs, $options);
+        }
+    }
 
-            if (!class_exists($validator) || !class_exists($key)) {
-                throw new \Exception("Unknown validator: {$key}");
+    public static function __callStatic($name, $arguments)
+    {
+        if (preg_match("/validates(\w+)Of/", $name, $match)) {
+
+            $class = $match[1];
+
+            $attrs = array_shift($arguments);
+
+            $attrs = is_array($attrs) ? $attrs : array($attrs);
+
+            $options = array();
+            if (!empty($arguments)) {
+                $options = array_shift($arguments);
             }
 
-            $defaults = $this->parse_validates_options($options);
-            $defaults['attributes'] = $attrs;
-            $vtor = new $validator($defaults);
-            $vtor->validate($this);
+            $validator_options = array(
+                $class => empty($options) ? true : $options
+            );
+
+            self::validates_with($class, $attrs, $validator_options);
         }
+    }
+
+    public static function clearValidators()
+    {
+        self::$validators = array();
+    }
+
+    private static function validates_with($class, $attrs, $options)
+    {
+        $defaults = self::parse_validates_options($options);
+
+        $defaults['attributes'] = $attrs;
+
+        $klass = "\\Larium\\Validations\\Validators\\" . $class;
+
+        $validator_class = class_exists($klass) ? $klass : $class;
+
+        if (!class_exists($validator_class)){
+            throw new \Exception(sprintf("Unknown validator: %s", $validator_class));
+        }
+
+        $validator = new $validator_class($defaults);
+
+        self::$validators[] = $validator;
     }
 
     public function readAttributeForValidation($attribute)
@@ -125,10 +164,14 @@ trait Validate
     {
         $this->validations();
 
+        foreach (self::$validators as $validator) {
+            $validator->validate($this);
+        }
+
         return $this->errors()->count() == 0;
     }
 
-    private function parse_validates_options($options)
+    private static function parse_validates_options($options)
     {
         if (is_array($options)) {
 
