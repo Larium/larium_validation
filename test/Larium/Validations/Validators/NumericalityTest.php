@@ -64,25 +64,59 @@ class NumericalityTest extends \PHPUnit_Framework_TestCase
     {
         Topic::validatesNumericalityOf('approved');
 
-        $this->invalid(self::$NIL + self::$BLANK + self::$JUNK);
-        $this->valid(self::$FLOATS + self::$INTEGERS + self::$BIGDECIMAL_STRINGS);
+        $this->invalid(array_merge(self::$NIL, self::$BLANK,self::$JUNK));
+        $this->valid(array_merge(self::$FLOATS, self::$INTEGERS, self::$BIGDECIMAL_STRINGS));
     }
 
-    public function testDefaultNumericalityWithNullAllowed()
+    public function testNumericalityWithNullAllowed()
     {
         Topic::validatesNumericalityOf('approved', ['allow_null' => true]);
 
-        $this->invalid(self::$BLANK + self::$JUNK);
-        $this->valid(self::$NIL + self::$FLOATS + self::$INTEGERS + self::$BIGDECIMAL_STRINGS);
+        $this->invalid(array_merge(self::$BLANK, self::$JUNK));
+        $this->valid(array_merge(self::$NIL, self::$FLOATS, self::$INTEGERS, self::$BIGDECIMAL_STRINGS));
     }
 
-    public function testDefaultNumericalityWithIntegerOnly()
+    public function testNumericalityWithIntegerOnly()
     {
         Topic::validatesNumericalityOf('approved', ['only_integer' => true]);
 
-        $this->invalid(self::$NIL + self::$BLANK + self::$JUNK + self::$FLOATS + self::$BIGDECIMAL_STRINGS);
-        $this->valid(self::$INTEGERS);
+        $this->invalid(array_merge(self::$NIL, self::$BLANK, self::$JUNK, self::$FLOATS, self::$BIGDECIMAL_STRINGS));
+        $this->valid(array_merge(self::$INTEGERS));
     }
+
+    public function testNumericalityWithIntegerOnlyAndNullAllowed()
+    {
+        Topic::validatesNumericalityOf('approved', ['allow_null' => true, 'only_integer' => true]);
+
+        $this->invalid(array_merge(self::$BLANK, self::$JUNK, self::$FLOATS, self::$BIGDECIMAL_STRINGS));
+        $this->valid(array_merge(self::$NIL, self::$INTEGERS));
+    }
+
+    public function testNumericalityWithGreaterThan()
+    {
+        Topic::validatesNumericalityOf('approved', ['greater_than' => 10]);
+
+        $this->invalid([-10, 10], 'greater_than');
+        $this->valid([11]);
+    }
+
+    public function testNumericalityWithGreaterThanOrEqual()
+    {
+        Topic::validatesNumericalityOf('approved', ['greater_than_or_equal_to' => 10]);
+
+        $this->invalid([-9, 9], 'greater_than_or_equal_to');
+        $this->valid([10]);
+    }
+
+    public function testNumericalityWithEqualTo()
+    {
+        Topic::validatesNumericalityOf('approved', ['equal_to' => 10]);
+
+        $this->invalid([-10, 11], 'equal_to');
+        $this->valid([10]);
+    }
+
+
 
 
     private function valid(array $values)
