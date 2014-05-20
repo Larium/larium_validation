@@ -120,7 +120,7 @@ trait Validate
                 $options = array_shift($arguments);
             }
 
-            self::validates_with($class, $attrs, $options);
+            self::validatesWith($class, $attrs, $options);
         }
     }
 
@@ -129,7 +129,7 @@ trait Validate
         self::$validators = array();
     }
 
-    private static function validates_with($class, $attrs, $options)
+    public static function validatesWith($class, $attrs, $options)
     {
         $defaults = self::parse_validates_options($options);
 
