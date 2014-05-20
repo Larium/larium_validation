@@ -143,14 +143,20 @@ trait Validate
             throw new \Exception(sprintf("Unknown validator: %s", $validator_class));
         }
 
-        $validator = new $validator_class($defaults);
+        //$validator = new $validator_class($defaults);
 
-        self::$validators[] = $validator;
+        $key = md5(serialize(array($validator_class => $defaults)));
+        self::$validators[$key] = array($validator_class => $defaults);
     }
 
     public function readAttributeForValidation($attribute)
     {
         return isset($this->$attribute) ? $this->$attribute : null;
+    }
+
+    public function getValidators()
+    {
+        return self::$validators;
     }
 
     protected function validations()
@@ -160,12 +166,12 @@ trait Validate
 
     protected function run_validations()
     {
-        if (false === $this->_validated) {
-            $this->validations();
-            $this->_validated = true;
-        }
+        $this->validations();
 
-        foreach (self::$validators as $validator) {
+        foreach (self::$validators as $meta) {
+            $validator_class = key($meta);
+            $options = $meta[$validator_class];
+            $validator = new $validator_class($options);
             $validator->validate($this);
         }
 

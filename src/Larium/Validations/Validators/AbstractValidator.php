@@ -72,6 +72,11 @@ abstract class AbstractValidator
         }
     }
 
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
     public function kind()
     {
         if (null == $this->kind) {

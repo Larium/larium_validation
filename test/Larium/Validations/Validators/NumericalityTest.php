@@ -8,42 +8,6 @@ use Larium\Validations\ValidatableInterface;
 use Larium\Validations\Validate;
 use Topic;
 
-class NumberValidation implements ValidatableInterface
-{
-    use Validate;
-
-    public $max_length = 4;
-
-    public $min_length = 50;
-
-    public $odd_or_null;
-
-    public $odd;
-
-    public $even;
-
-    public function validations()
-    {
-        $this->validates(
-            'max_length',
-            array(
-                'Numericality' => array(
-                    'less_than_or_equal_to' => 5
-                )
-            )
-        );
-
-        $this->validates(
-            'min_length',
-            array(
-                'Numericality' => array(
-                    'greater_than_or_equal_to' => 40,
-                )
-            )
-        );
-    }
-}
-
 class NumericalityTest extends \PHPUnit_Framework_TestCase
 {
     private static $NIL = [null];
@@ -64,7 +28,7 @@ class NumericalityTest extends \PHPUnit_Framework_TestCase
     {
         Topic::validatesNumericalityOf('approved');
 
-        $this->invalid(array_merge(self::$NIL, self::$BLANK,self::$JUNK));
+        $this->invalid(array_merge(self::$NIL, self::$BLANK, self::$JUNK));
         $this->valid(array_merge(self::$FLOATS, self::$INTEGERS, self::$BIGDECIMAL_STRINGS));
     }
 
@@ -115,9 +79,6 @@ class NumericalityTest extends \PHPUnit_Framework_TestCase
         $this->invalid([-10, 11], 'equal_to');
         $this->valid([10]);
     }
-
-
-
 
     private function valid(array $values)
     {
