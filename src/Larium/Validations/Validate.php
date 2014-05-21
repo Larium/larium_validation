@@ -25,8 +25,6 @@ namespace Larium\Validations;
  */
 trait Validate
 {
-    private $_validated = false;
-
     protected static $validators = array();
 
     protected $default_keys = array('if', 'on', 'allow_empty', 'allow_null');
@@ -146,11 +144,7 @@ trait Validate
             throw new \Exception(sprintf("Unknown validator: %s", $validator_class));
         }
 
-        //$validator = new $validator_class($defaults);
-
-        $key = md5(serialize(array($validator_class => $defaults)));
-
-        self::$validators[$key] = array($validator_class => $defaults);
+        self::$validators[] = array($validator_class => $defaults);
     }
 
     public function readAttributeForValidation($attribute)
