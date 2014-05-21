@@ -175,10 +175,7 @@ trait Validate
 
     protected function run_validations()
     {
-        $validations = $this->getValidations();
-        foreach($validations as $index => $metadata) {
-            $this->validates($metadata[0], $metadata[1]);
-        }
+        $this->validations();
 
         foreach (self::$validators as $meta) {
             $validator_class = key($meta);
