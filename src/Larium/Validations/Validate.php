@@ -28,6 +28,7 @@ trait Validate
     private $_validated = false;
 
     protected static $validators = array();
+
     protected $default_keys = array('if', 'on', 'allow_empty', 'allow_null');
 
     private $_errors;
@@ -101,7 +102,7 @@ trait Validate
     {
         foreach ($validations as $validatorClass => $options) {
 
-            self::validates_with($validatorClass, $attrs, $options);
+            self::validatesWith($validatorClass, $attrs, $options);
         }
     }
 
@@ -121,6 +122,8 @@ trait Validate
             }
 
             self::validatesWith($class, $attrs, $options);
+        } else {
+            throw new \InvalidArgumentException(sprintf("%s::%s method does not exist!", __CLASS__, $name));
         }
     }
 
@@ -146,6 +149,7 @@ trait Validate
         //$validator = new $validator_class($defaults);
 
         $key = md5(serialize(array($validator_class => $defaults)));
+
         self::$validators[$key] = array($validator_class => $defaults);
     }
 
@@ -164,9 +168,17 @@ trait Validate
         return true;
     }
 
+    protected function getValidations()
+    {
+        return isset(self::$validate) ? self::$validate : array();
+    }
+
     protected function run_validations()
     {
-        $this->validations();
+        $validations = $this->getValidations();
+        foreach($validations as $index => $metadata) {
+            $this->validates($metadata[0], $metadata[1]);
+        }
 
         foreach (self::$validators as $meta) {
             $validator_class = key($meta);

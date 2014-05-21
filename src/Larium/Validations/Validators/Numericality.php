@@ -82,6 +82,8 @@ class Numericality extends AbstractValidator
 
                     if ( is_callable($option_value)) {
                         $option_value = $option_value($record);
+                    } else if (method_exists($record, $option_value)) {
+                        $option_value = $record->$option_value();
                     }
 
                     if (false === $this->check_value($value, $option_value, $this->checks[$option])) {
