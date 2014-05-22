@@ -116,4 +116,15 @@ abstract class AbstractValidator
     {
 
     }
+
+    /**
+     * Gets options.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
 }
