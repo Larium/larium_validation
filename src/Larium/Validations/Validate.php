@@ -34,7 +34,7 @@ trait Validate
     /**
      * Returns errors that occured after the validation of the class.
      *
-     * @see \Larium"validations\Errors
+     * @see \Larium\Validations\Errors
      *
      * @return \ArrayIterator
      */
@@ -144,7 +144,26 @@ trait Validate
             throw new \Exception(sprintf("Unknown validator: %s", $validator_class));
         }
 
-        self::$validators[] = array($validator_class => $defaults);
+        $validator = new $validator_class($defaults);
+        if (empty(self::$validators)) {
+            self::$validators[] = $validator;
+        } else {
+            $exists = false;
+            foreach(self::$validators as $v) {
+                if (   $v->getAttributes() == $validator->getAttributes()
+                    && $v->kind() == $validator->kind()
+                ) {
+                    $exists = true;
+                    break;
+                } else {
+                    $exists = false;
+                }
+            }
+
+            if (false === $exists) {
+                self::$validators[] = $validator;
+            }
+        }
     }
 
     public function readAttributeForValidation($attribute)
@@ -162,19 +181,11 @@ trait Validate
         return true;
     }
 
-    protected function getValidations()
-    {
-        return isset(self::$validate) ? self::$validate : array();
-    }
-
-    protected function run_validations()
+    private function run_validations()
     {
         $this->validations();
 
-        foreach (self::$validators as $meta) {
-            $validator_class = key($meta);
-            $options = $meta[$validator_class];
-            $validator = new $validator_class($options);
+        foreach (self::$validators as $validator) {
             $validator->validate($this);
         }
 
