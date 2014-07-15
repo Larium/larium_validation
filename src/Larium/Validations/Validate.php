@@ -152,6 +152,7 @@ trait Validate
             foreach(self::$validators as $v) {
                 if (   $v->getAttributes() == $validator->getAttributes()
                     && $v->kind() == $validator->kind()
+                    && $v->getOptions() == $validator->getOptions()
                 ) {
                     $exists = true;
                     break;
