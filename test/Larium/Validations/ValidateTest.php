@@ -17,10 +17,12 @@ class ValidateTest extends \PHPUnit_Framework_TestCase
 
         $a->isValid();
 
+
         $this->assertEquals(3, count($a->getValidators()));
 
+        Author::clearValidators();
         $a->isValid();
 
-        $this->assertEquals(3, count($a->getValidators()));
+        $this->assertEquals(2, count($a->getValidators()));
     }
 }
