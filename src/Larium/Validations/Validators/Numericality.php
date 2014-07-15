@@ -11,7 +11,7 @@ class Numericality extends AbstractValidator
         'less_than_or_equal_to'    => '<=',
         'greater_than' => '>',
         'equal_to'     => '==',
-        'less_than'    => '==',
+        'less_than'    => '<',
         'odd'          => 'odd',
         'even'         => 'even',
         'other_than'   => '!='
