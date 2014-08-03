@@ -27,6 +27,8 @@ trait Validate
 {
     protected static $validators = array();
 
+    public static $validators_per_instance = array();
+
     protected $default_keys = array('if', 'on', 'allow_empty', 'allow_null');
 
     private $_errors;
@@ -100,7 +102,7 @@ trait Validate
     {
         foreach ($validations as $validatorClass => $options) {
 
-            self::validatesWith($validatorClass, $attrs, $options);
+            $this->validatesWith($validatorClass, $attrs, $options);
         }
     }
 
@@ -130,9 +132,9 @@ trait Validate
         self::$validators = array();
     }
 
-    public static function validatesWith($class, $attrs, $options)
+    public function validatesWith($class, $attrs, $options)
     {
-        $defaults = self::parse_validates_options($options);
+        $defaults = $this->parse_validates_options($options);
 
         $defaults['attributes'] = $attrs;
 
@@ -145,26 +147,8 @@ trait Validate
         }
 
         $validator = new $validator_class($defaults);
-        if (empty(self::$validators)) {
-            self::$validators[] = $validator;
-        } else {
-            $exists = false;
-            foreach(self::$validators as $v) {
-                if (   $v->getAttributes() == $validator->getAttributes()
-                    && $v->kind() == $validator->kind()
-                    && $v->getOptions() == $validator->getOptions()
-                ) {
-                    $exists = true;
-                    break;
-                } else {
-                    $exists = false;
-                }
-            }
 
-            if (false === $exists) {
-                self::$validators[] = $validator;
-            }
-        }
+        $validator->validate($this);
     }
 
     public function readAttributeForValidation($attribute)
@@ -186,14 +170,10 @@ trait Validate
     {
         $this->validations();
 
-        foreach (self::$validators as $validator) {
-            $validator->validate($this);
-        }
-
         return $this->errors()->count() == 0;
     }
 
-    private static function parse_validates_options($options)
+    private function parse_validates_options($options)
     {
         if (is_array($options)) {
 
