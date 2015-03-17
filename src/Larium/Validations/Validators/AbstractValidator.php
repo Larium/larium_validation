@@ -7,7 +7,7 @@ namespace Larium\Validations\Validators;
 abstract class AbstractValidator
 {
     /**
-     * @var array $attributes Class attributes to validates.
+     * @var array Class attributes to validates.
      * @access protected
      */
     protected $attributes = array();
@@ -24,7 +24,7 @@ abstract class AbstractValidator
      */
     protected $kind;
 
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $this->attributes = isset($options['attributes'])
             ? (
@@ -48,7 +48,7 @@ abstract class AbstractValidator
         $this->check_validity();
     }
 
-    public function validate($record)
+    public function validate($record, $error)
     {
         $if = $this->validates_if($record);
         if (false == $if) {
@@ -58,7 +58,7 @@ abstract class AbstractValidator
 
         foreach ($this->attributes as $attribute) {
 
-            $value = $record->readAttributeForValidation($attribute);
+            $value = $this->readAttributeForValidation($attribute, $record);
 
             if (   (null === $value && isset($this->options['allow_null'])
                 && true == $this->options['allow_null'])
@@ -68,7 +68,7 @@ abstract class AbstractValidator
                 continue;
             }
 
-            $this->validateEach($record, $attribute, $value);
+            $this->validateEach($record, $attribute, $value, $error);
         }
     }
 
@@ -110,7 +110,7 @@ abstract class AbstractValidator
      * @access public
      * @return void
      */
-    abstract public function validateEach($record, $attribute, $value);
+    abstract public function validateEach($record, $attribute, $value, $error);
 
     protected function check_validity()
     {
@@ -126,5 +126,23 @@ abstract class AbstractValidator
     public function getOptions()
     {
         return $this->options;
+    }
+
+    protected function readAttributeForValidation($attribute, $record)
+    {
+        $getter = 'get'.str_replace(' ', '', ucwords(str_replace('_', ' ', $attribute)));;
+
+        if (property_exists($record, $attribute)) {
+            $prop = new \ReflectionProperty($record, $attribute);
+            if ($prop->isPublic()) {
+                return $record->$attribute;
+            } elseif (is_callable(array($record, $getter))) {
+                return $record->$getter();
+            }
+        } elseif (is_callable(array($record, $getter))) {
+            return $record->$getter();
+        }
+
+        throw new \InvalidArgumentException(sprintf("%s::%s does not exist", get_class($record), $attribute));
     }
 }

@@ -14,19 +14,37 @@ namespace Larium\Validations\Validators;
  */
 class Length extends AbstractValidator
 {
-    protected $messages = array('is'=>':wrong_length', 'min' => ':too_short', 'max'=>':too_long');
-    protected $checks = array('is'=>'==', 'min'=>'>=', 'max' => '<=');
+    protected $messages = array(
+        'is'  => ':wrong_length',
+        'min' => ':too_short',
+        'max' => ':too_long'
+    );
 
-    private $_reserved_options = array('min'=>null, 'max'=>null, 'within'=>null, 'is'=>null, 'tokenizer'=>null, 'too_short'=>null, 'too_long'=>null);
-    public function __construct($options)
+    protected $checks = array(
+        'is'  => '==',
+        'min' => '>=',
+        'max' => '<='
+    );
+
+    private $_reserved_options = array(
+        'min'       => null,
+        'max'       => null,
+        'within'    => null,
+        'is'        => null,
+        'tokenizer' => null,
+        'too_short' => null,
+        'too_long'  => null
+    );
+
+    public function __construct(array $options)
     {
-
         $range = isset($options['in'])
             ? $options['in']
             : (isset($options['within']) ? $options['within'] : null);
         if ($range) {
-            if (!is_array($range))
+            if (!is_array($range)) {
                 throw new \InvalidArgumentException('`in` and `within` must be an array');
+            }
             $options['min'] = min($range);
             $options['max'] = max($range);
         }
@@ -34,7 +52,7 @@ class Length extends AbstractValidator
         parent::__construct($options);
     }
 
-    public function validateEach($record, $attribute, $value)
+    public function validateEach($record, $attribute, $value, $error)
     {
         $value = $this->_tokenize($value);
         $value_length = is_array($value) ? count($value) : strlen($value);
@@ -44,19 +62,25 @@ class Length extends AbstractValidator
             if (!isset($this->options[$key])) continue;
 
             $check_value = $this->options[$key];
-            if ($this->_check_value($check_value, $value_length, $operator)) continue;
+            if ($this->_check_value($check_value, $value_length, $operator)) {
+                continue;
+            }
 
-            $error_options = array_diff_key($this->options, $this->_reserved_options);
+            $error_options = array_diff_key(
+                $this->options,
+                $this->_reserved_options
+            );
 
             $error_options['count'] = $check_value;
             $default_message = isset($this->options[$this->messages[$key]])
                 ? $this->options[$this->messages[$key]]
                 : null;
 
-            if ($default_message)
+            if ($default_message) {
                 $error_options['message'] = $error_options['message'] ?: $default_message;
+            }
 
-            $record->errors()->add($attribute, $this->messages[$key], $error_options);
+            $error->add($attribute, $this->messages[$key], $error_options);
         }
     }
 
@@ -70,7 +94,7 @@ class Length extends AbstractValidator
         return $value;
     }
 
-    private function _check_value($check_value,$value_length, $operator)
+    private function _check_value($check_value, $value_length, $operator)
     {
         switch ($operator) {
             case '==':

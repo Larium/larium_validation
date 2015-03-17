@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
@@ -6,7 +6,7 @@ namespace Larium\Validations;
 
 class Errors extends \ArrayIterator
 {
-    public function __construct($array=array(), $flags=0)
+    public function __construct($array = array(), $flags=0)
     {
         parent::__construct($array, $flags);
     }
@@ -20,7 +20,7 @@ class Errors extends \ArrayIterator
 
     public function isEmpty()
     {
-        return $this->count() == 0; 
+        return $this->count() == 0;
     }
 
     public function contains($attribute)

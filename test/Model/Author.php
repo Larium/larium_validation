@@ -2,34 +2,31 @@
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
-use Larium\Validations\ValidatableInterface;
-use Larium\Validations\Validate;
+use Larium\Validations\Validator;
 
-class Author implements ValidatableInterface
+class Author
 {
-    use Validate;
-
     public $firstname;
 
     public $lastname;
 
-    protected function validations()
+    public static function loadValidations(Validator $validator)
     {
-        $this->validates(
+        $validator->addConstraint(
             array('firstname', 'lastname'),
             array(
-                'Numericality' => array(
-                    'equal_to' => 5,
+                'Length' => array(
+                    'min' => 5,
                     'allow_null' => true
                 )
             )
         );
 
-        $this->validates(
+        $validator->addConstraint(
             'firstname',
             array(
-                'Numericality' => array(
-                    'equal_to' => 5,
+                'Length' => array(
+                    'min' => 5,
                     'allow_null' => true,
                     'if' => function($object) {
                         return !empty($object->lastname);
