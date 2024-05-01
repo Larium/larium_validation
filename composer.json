@@ -1,7 +1,7 @@
 {
     "name": "larium/validation",
     "description": "Larium validation library",
-    "keywords": [""],
+    "keywords": ["validation", "validator"],
     "type": "library",
     "license": "MIT",
     "authors": [
